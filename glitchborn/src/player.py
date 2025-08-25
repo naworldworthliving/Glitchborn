@@ -28,6 +28,14 @@ class Player(pygame.sprite.Sprite):
         self.jump_count = 0
         self.level = None
 
+        # --- Player Stats ---
+        self.health = 100
+        self.max_health = 100
+        self.stamina = 100
+        self.max_stamina = 100
+        self.xp = 0
+        self.next_level_xp = 100
+
     def update(self):
         """
         Update the player's position and handle physics.
