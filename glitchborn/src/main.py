@@ -49,8 +49,10 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_SPACE:
                     self.player.jump()
+                if event.key == pygame.K_f:
+                    self.player.attack()
 
     def update(self):
         """
@@ -72,12 +74,27 @@ class Game:
             self.player.rect.left = 200
             self.level.shift_world(shift)
 
+        # --- Attack collision ---
+        if self.player.attacking:
+            # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
+            # We need to check for collision in the same coordinate system.
+            # We can check by creating a temporary rect for the enemy in screen coordinates.
+            for enemy in self.level.enemy_list:
+                # The world_shift is the offset of the world relative to the screen.
+                # A positive world_shift means the world has moved right (player went left).
+                # So, screen_x = world_x + world_shift
+                enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
+                if self.player.attack_rect.colliderect(enemy_screen_rect):
+                    enemy.kill()
+
         # --- Player-enemy collision ---
-        enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
-        for enemy in enemy_hit_list:
-            # For now, just print a message
-            print("Player hit an enemy!")
-            # We could end the game here, or reduce player health, etc.
+        # Only check for player-enemy collision if the player is not attacking.
+        if not self.player.attacking:
+            enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
+            if enemy_hit_list:
+                # For now, just print a message
+                print("Player hit an enemy!")
+                # We could end the game here, or reduce player health, etc.
 
     def draw(self):
         """

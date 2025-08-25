@@ -46,6 +46,13 @@ class Player(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.animation_speed = 100 # ms per frame
 
+        # --- Attack attributes ---
+        self.attacking = False
+        self.attack_rect = pygame.Rect(0, 0, 0, 0)
+        self.attack_duration = 200 # ms
+        self.attack_time = 0
+
+
         self.change_x = 0
         self.change_y = 0
         self.jump_count = 0
@@ -56,6 +63,8 @@ class Player(pygame.sprite.Sprite):
         Update the player's position and handle physics.
         """
         self._animate()
+        self._handle_attack_timer()
+
         # --- Gravity ---
         self.calc_grav()
 
@@ -169,3 +178,26 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # Set the new rect's center to the old center
         self.rect.center = old_center
+
+    def attack(self):
+        """
+        Perform an attack.
+        """
+        if not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            # Create a hitbox in front of the player
+            if self.facing_right:
+                self.attack_rect = pygame.Rect(self.rect.right, self.rect.y, 40, self.rect.height)
+            else:
+                self.attack_rect = pygame.Rect(self.rect.left - 40, self.rect.y, 40, self.rect.height)
+
+    def _handle_attack_timer(self):
+        """
+        Handles the timer for the attack duration.
+        """
+        if self.attacking:
+            now = pygame.time.get_ticks()
+            if now - self.attack_time > self.attack_duration:
+                self.attacking = False
+                self.attack_rect = pygame.Rect(0, 0, 0, 0)
