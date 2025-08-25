@@ -51,8 +51,8 @@ class Level:
         MIN_Y, MAX_Y = 250, 500
         MAX_Y_CHANGE = 80
 
-        last_x = 500
-        last_y = 450
+        last_x = 200
+        last_y = 500
 
         for _ in range(PLATFORM_COUNT):
             width = random.randint(MIN_WIDTH, MAX_WIDTH)
