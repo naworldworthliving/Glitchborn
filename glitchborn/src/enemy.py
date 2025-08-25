@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # --- Constants ---
 ENEMY_WIDTH = 32
@@ -10,7 +11,7 @@ class Enemy(pygame.sprite.Sprite):
     """
     Represents an enemy in the game.
     """
-    def __init__(self, x, y, patrol_range=100):
+    def __init__(self, x, y, patrol_range=50):
         """
         Initialize the enemy.
         """
@@ -25,7 +26,7 @@ class Enemy(pygame.sprite.Sprite):
         # --- Patrolling AI ---
         self.start_x = x
         self.patrol_range = patrol_range
-        self.direction = 1 # 1 for right, -1 for left
+        self.direction = random.choice([1, -1]) # 1 for right, -1 for left
 
     def update(self):
         """
