@@ -29,6 +29,7 @@ class Enemy(pygame.sprite.Sprite):
         self.change_x = 2  # Patrolling speed
 
         # --- Stats ---
+        self.difficulty_modifier = difficulty_modifier
         self.max_health = int(50 * difficulty_modifier)
         self.health = self.max_health
         self.damage = int(10 * difficulty_modifier)

@@ -68,7 +68,8 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                 if self.game_state == 'playing':
-                    if event.key == pygame.K_SPACE: self.player.jump()
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                        self.player.jump()
                     if event.key == pygame.K_f:
                         new_attack = self.player.attack()
                         self.attacks.add(new_attack)

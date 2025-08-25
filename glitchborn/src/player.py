@@ -65,9 +65,9 @@ class Player(pygame.sprite.Sprite):
 
         # --- Handle keyboard input for horizontal movement ---
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.go_left()
-        elif keys[pygame.K_d]:
+        elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.go_right()
         else:
             self.stop()
