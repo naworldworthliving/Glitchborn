@@ -17,11 +17,27 @@ class Player(pygame.sprite.Sprite):
         Initialize the player.
         """
         super().__init__()
-        self.image = pygame.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
-        self.image.fill(PLAYER_COLOR)
+        # -- Load images for animations ---
+        self.idle_image = pygame.image.load("glitchborn/assets/player_s.png").convert_alpha()
+        self.walk_frames = [
+            pygame.image.load("glitchborn/assets/player_w1.png").convert_alpha(),
+            pygame.image.load("glitchborn/assets/player_w2.png").convert_alpha()
+        ]
+        # Create flipped images for moving left
+        self.idle_image_left = pygame.transform.flip(self.idle_image, True, False)
+        self.walk_frames_left = [pygame.transform.flip(img, True, False) for img in self.walk_frames]
+
+        self.image = self.idle_image
         self.rect = self.image.get_rect()
         self.rect.x = start_x
         self.rect.y = start_y
+
+        # --- Animation attributes ---
+        self.walking = False
+        self.facing_right = True
+        self.frame_index = 0
+        self.last_update = pygame.time.get_ticks()
+        self.animation_speed = 100 # ms per frame
 
         self.change_x = 0
         self.change_y = 0
@@ -32,6 +48,7 @@ class Player(pygame.sprite.Sprite):
         """
         Update the player's position and handle physics.
         """
+        self._animate()
         # --- Gravity ---
         self.calc_grav()
 
@@ -98,15 +115,50 @@ class Player(pygame.sprite.Sprite):
         Called when the user hits the 'a' key.
         """
         self.change_x = -PLAYER_SPEED
+        self.walking = True
+        self.facing_right = False
 
     def go_right(self):
         """
         Called when the user hits the 'd' key.
         """
         self.change_x = PLAYER_SPEED
+        self.walking = True
+        self.facing_right = True
 
     def stop(self):
         """
         Called when the user lets off the keyboard for horizontal movement.
         """
         self.change_x = 0
+        self.walking = False
+
+    def _animate(self):
+        """
+        Handles player animation.
+        """
+        now = pygame.time.get_ticks()
+
+        # Idle animation
+        if not self.walking:
+            if self.facing_right:
+                self.image = self.idle_image
+            else:
+                self.image = self.idle_image_left
+            return
+
+        # Walking animation
+        if now - self.last_update > self.animation_speed:
+            self.last_update = now
+            self.frame_index = (self.frame_index + 1) % len(self.walk_frames)
+            if self.facing_right:
+                self.image = self.walk_frames[self.frame_index]
+            else:
+                self.image = self.walk_frames_left[self.frame_index]
+
+        # Store the old center position
+        old_center = self.rect.center
+        # Update the rect with the new image
+        self.rect = self.image.get_rect()
+        # Set the new rect's center to the old center
+        self.rect.center = old_center
