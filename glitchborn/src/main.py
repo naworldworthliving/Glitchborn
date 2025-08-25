@@ -1,6 +1,7 @@
 import pygame
 from player import Player
 from level import Level
+from enemy import Enemy
 
 # --- Constants ---
 SCREEN_WIDTH = 800
@@ -48,8 +49,10 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_SPACE:
                     self.player.jump()
+                if event.key == pygame.K_f:
+                    self.player.attack()
 
     def update(self):
         """
@@ -57,6 +60,41 @@ class Game:
         """
         self.all_sprites.update()
         self.level.update()
+
+        # --- Side-scrolling logic ---
+        # If the player gets near the right side, shift the world left (-x)
+        if self.player.rect.right > SCREEN_WIDTH - 200:
+            shift = self.player.rect.right - (SCREEN_WIDTH - 200)
+            self.player.rect.right = SCREEN_WIDTH - 200
+            self.level.shift_world(-shift)
+
+        # If the player gets near the left side, shift the world right (+x)
+        if self.player.rect.left < 200:
+            shift = 200 - self.player.rect.left
+            self.player.rect.left = 200
+            self.level.shift_world(shift)
+
+        # --- Attack collision ---
+        if self.player.attacking:
+            # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
+            # We need to check for collision in the same coordinate system.
+            # We can check by creating a temporary rect for the enemy in screen coordinates.
+            for enemy in self.level.enemy_list:
+                # The world_shift is the offset of the world relative to the screen.
+                # A positive world_shift means the world has moved right (player went left).
+                # So, screen_x = world_x + world_shift
+                enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
+                if self.player.attack_rect.colliderect(enemy_screen_rect):
+                    enemy.kill()
+
+        # --- Player-enemy collision ---
+        # Only check for player-enemy collision if the player is not attacking.
+        if not self.player.attacking:
+            enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
+            if enemy_hit_list:
+                # For now, just print a message
+                print("Player hit an enemy!")
+                # We could end the game here, or reduce player health, etc.
 
     def draw(self):
         """
