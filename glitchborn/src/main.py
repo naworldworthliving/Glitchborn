@@ -85,6 +85,7 @@ class Game:
                 # So, screen_x = world_x + world_shift
                 enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
                 if self.player.attack_rect.colliderect(enemy_screen_rect):
+                    self.player.add_xp(enemy.xp_reward)
                     enemy.kill()
 
         # --- Player-enemy collision ---
@@ -103,6 +104,12 @@ class Game:
         self.screen.fill(BLACK)
         self.level.draw(self.screen)
         self.all_sprites.draw(self.screen)
+
+        # Draw attack hitbox for debugging/feedback
+        if self.player.attacking:
+            # This is just a placeholder, a proper animation should be used
+            pygame.draw.rect(self.screen, (255, 255, 255), self.player.attack_rect)
+
         pygame.display.flip()
 
     def quit(self):

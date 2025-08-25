@@ -19,14 +19,14 @@ class Level:
         # Load background
         try:
             self.background_image = pygame.image.load("glitchborn/assets/bg1.png").convert()
-        except pygame.error:
+        except (pygame.error, FileNotFoundError):
             self.background_image = pygame.Surface([800, 600])
             self.background_image.fill((100, 100, 100)) # Gray placeholder
 
         # Load ground tile
         try:
             ground_tile_image = pygame.image.load("glitchborn/assets/groundtile.png").convert()
-        except pygame.error:
+        except (pygame.error, FileNotFoundError):
             ground_tile_image = pygame.Surface([64, 64])
             ground_tile_image.fill((0, 255, 0)) # Green placeholder
 
