@@ -3,6 +3,7 @@ import random
 from player import Player
 from level import Level
 from enemy import Enemy
+from particle import Particle
 
 # --- Constants ---
 SCREEN_WIDTH = 800
@@ -35,17 +36,41 @@ class Game:
         self.stat_buttons = {}
         self.player.level = self.level
         self.all_sprites.add(self.player)
+        self.particles = pygame.sprite.Group()
 
 
     def run(self):
         """
-        The main game loop.
+        The main game loop - MODIFIED FOR TESTING
         """
-        while self.running:
-            self.clock.tick(FPS)
-            self.events()
-            self.update()
-            self.draw()
+        import sys
+        original_stdout = sys.stdout
+        with open("test_output.log", "w") as f:
+            sys.stdout = f
+
+            if not self.level.enemy_list:
+                print("--- TEST FAILED: No enemies generated. ---")
+            else:
+                print("--- TEST: Simulating a player attack on the first enemy. ---")
+                first_enemy = self.level.enemy_list.sprites()[0]
+
+                # Position player to the left of the enemy and attack
+                self.player.rect.right = first_enemy.rect.left
+                self.player.rect.centery = first_enemy.rect.centery
+                self.player.facing_right = True
+
+                # This call sets the attack flag and the attack_rect
+                self.player.attack()
+
+                print(f"--- PRE-UPDATE ---")
+                print(f"Player attacking: {self.player.attacking}")
+                print(f"Player attack_rect: {self.player.attack_rect}")
+                print(f"Enemy rect: {first_enemy.rect}")
+
+                # Run one update cycle to process the collision
+                self.update()
+
+        sys.stdout = original_stdout
         self.quit()
 
     def events(self):
@@ -81,18 +106,17 @@ class Game:
         """
         Update the game state.
         """
+        self.particles.update()
         if self.game_state == 'playing':
             self.all_sprites.update()
             self.level.update()
 
             # --- Side-scrolling logic ---
-            # If the player gets near the right side, shift the world left (-x)
             if self.player.rect.right > SCREEN_WIDTH - 200:
                 shift = self.player.rect.right - (SCREEN_WIDTH - 200)
                 self.player.rect.right = SCREEN_WIDTH - 200
                 self.level.shift_world(-shift)
 
-            # If the player gets near the left side, shift the world right (+x)
             if self.player.rect.left < 200:
                 shift = 200 - self.player.rect.left
                 self.player.rect.left = 200
@@ -100,30 +124,32 @@ class Game:
 
             # --- Attack collision ---
             if self.player.attacking:
-                # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
-                # We need to check for collision in the same coordinate system.
-                # We can check by creating a temporary rect for the enemy in screen coordinates.
                 for enemy in self.level.enemy_list.copy():
-                    # The world_shift is the offset of the world relative to the screen.
-                    # A positive world_shift means the world has moved right (player went left).
-                    # So, screen_x = world_x + world_shift
                     enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
+                    print(f"--- IN-UPDATE: Checking collision between Player attack_rect {self.player.attack_rect} and Enemy screen_rect {enemy_screen_rect} ---")
                     if self.player.attack_rect.colliderect(enemy_screen_rect):
+                        print(f"--- COLLISION DETECTED! ---")
+
+                        # --- Create particle burst ---
+                        print(f"--- PARTICLE BURST at {enemy_screen_rect.center} ---")
+                        for _ in range(15):
+                            particle = Particle(enemy_screen_rect.centerx, enemy_screen_rect.centery)
+                            self.particles.add(particle)
+
                         xp = random.randint(enemy.xp_reward[0], enemy.xp_reward[1])
                         self.player.add_xp(xp)
                         enemy.kill()
+
                         # Item drop logic
                         if random.random() < 0.5: # 50% drop chance
                             print("Enemy dropped an item!")
 
             # --- Player-enemy collision ---
-            # Only check for player-enemy collision if the player is not attacking.
             if not self.player.attacking:
                 enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
                 if enemy_hit_list:
-                    # For now, just print a message
                     print("Player hit an enemy!")
-                    # We could end the game here, or reduce player health, etc.
+
 
     def draw_text(self, text, size, color, x, y):
         """
@@ -185,6 +211,8 @@ class Game:
         self.screen.fill(BLACK)
         self.level.draw(self.screen)
         self.all_sprites.draw(self.screen)
+        self.particles.draw(self.screen)
+
 
         # Draw attack hitbox for debugging/feedback
         if self.player.attacking:

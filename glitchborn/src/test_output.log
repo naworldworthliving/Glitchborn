@@ -1,0 +1,42 @@
+--- TEST: Simulating a player attack on the first enemy. ---
+--- PRE-UPDATE ---
+Player attacking: True
+Player attack_rect: <rect(1082, 420, 60, 128)>
+Enemy rect: <rect(1082, 468, 32, 32)>
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(120, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(428, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(919, 463, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(1234, 427, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(2976, 408, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(4980, 218, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(5236, 239, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(5526, 218, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(8771, 218, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(9048, 218, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(10044, 313, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(10432, 253, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(11213, 323, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(11578, 349, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(13553, 457, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(14256, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(15532, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(17716, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(18459, 380, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(18728, 317, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(19005, 311, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(20410, 218, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(21170, 226, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(21547, 255, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(22626, 333, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(23047, 291, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(24139, 309, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(24480, 305, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(24751, 383, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(25749, 397, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(28790, 303, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(29159, 291, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(29615, 313, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(31388, 371, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(31851, 438, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(33236, 468, 32, 32)> ---
+--- IN-UPDATE: Checking collision between Player attack_rect <rect(1082, 420, 60, 128)> and Enemy screen_rect <rect(34720, 468, 32, 32)> ---
