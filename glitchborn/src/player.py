@@ -27,12 +27,19 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load("glitchborn/assets/player_walk3.png").convert(),
             pygame.image.load("glitchborn/assets/player_walk4.png").convert()
         ]
+        self.attack_frames = [
+            pygame.image.load("glitchborn/assets/player_w1.png").convert(),
+            pygame.image.load("glitchborn/assets/player_w2.png").convert()
+        ]
         for frame in self.walk_frames:
+            frame.set_colorkey((255, 255, 255))
+        for frame in self.attack_frames:
             frame.set_colorkey((255, 255, 255))
 
         # Create flipped images for moving left
         self.idle_image_left = pygame.transform.flip(self.idle_image, True, False)
         self.walk_frames_left = [pygame.transform.flip(img, True, False) for img in self.walk_frames]
+        self.attack_frames_left = [pygame.transform.flip(img, True, False) for img in self.attack_frames]
 
         self.image = self.idle_image
         self.rect = self.image.get_rect()
@@ -160,6 +167,26 @@ class Player(pygame.sprite.Sprite):
         Handles player animation.
         """
         now = pygame.time.get_ticks()
+
+        # Attack animation
+        if self.attacking:
+            # roughly corresponds to attack_duration
+            time_since_attack = now - self.attack_time
+            # Each attack frame is shown for half the attack duration
+            frame_duration = self.attack_duration / len(self.attack_frames)
+            # Determine which frame to show
+            frame_index = int(time_since_attack / frame_duration)
+            if frame_index >= len(self.attack_frames):
+                frame_index = len(self.attack_frames) -1 # hold last frame
+
+            if self.facing_right:
+                self.image = self.attack_frames[frame_index]
+            else:
+                self.image = self.attack_frames_left[frame_index]
+
+            # Reset walking animation frame index
+            self.frame_index = 0
+            return
 
         # Idle animation
         if not self.walking:

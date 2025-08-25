@@ -1,4 +1,5 @@
 import pygame
+import random
 from platform import Platform
 from enemy import Enemy
 
@@ -16,30 +17,41 @@ class Level:
         self.floating_text_group = pygame.sprite.Group()
         self.world_shift = 0
 
-        # Array of platform data: [width, height, x, y]
-        level_data = [
-            [500, 30, 100, 500],
-            [300, 30, 300, 400],
-            [200, 30, 550, 300],
-            # Ground platform
-            [2000, 30, 0, 570],
-        ]
+        # Level dimensions
+        level_width = 10000
 
-        for data in level_data:
-            platform = Platform(data[0], data[1])
-            platform.rect.x = data[2]
-            platform.rect.y = data[3]
+        # Ground platform
+        ground = Platform(level_width, 30)
+        ground.rect.x = 0
+        ground.rect.y = 570
+        self.platform_list.add(ground)
+
+        # Procedurally generate platforms
+        last_x = 0
+        for x in range(0, level_width, 200):
+            if x - last_x > 400: # Ensure platforms are not too far apart
+                x = last_x + random.randint(200, 400)
+
+            if x >= level_width:
+                break
+
+            width = random.randint(150, 300)
+            height = 30
+
+            # Ensure platforms are reachable
+            y = random.randint(300, 540)
+
+            platform = Platform(width, height)
+            platform.rect.x = x
+            platform.rect.y = y
             self.platform_list.add(platform)
 
-        # Array of enemy data: [x, y]
-        enemy_data = [
-            [400, 540],
-            [800, 370],
-        ]
+            # Add an enemy on some platforms
+            if random.random() < 0.3: # 30% chance of an enemy
+                enemy = Enemy(x + width / 2, y - 32)
+                self.enemy_list.add(enemy)
 
-        for data in enemy_data:
-            enemy = Enemy(data[0], data[1])
-            self.enemy_list.add(enemy)
+            last_x = x + width
 
     def shift_world(self, shift_x):
         """
