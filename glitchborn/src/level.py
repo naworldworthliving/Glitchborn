@@ -95,6 +95,7 @@ class Level:
             platform.rect.x += shift_x
         for enemy in self.enemy_list:
             enemy.rect.x += shift_x
+            enemy.start_x += shift_x
 
     def draw(self, screen):
         """
