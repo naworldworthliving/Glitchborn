@@ -49,8 +49,19 @@ class Player(pygame.sprite.Sprite):
         # --- Attack attributes ---
         self.attacking = False
         self.attack_rect = pygame.Rect(0, 0, 0, 0)
-        self.attack_duration = 200 # ms
+        self.attack_duration = 300 # ms
         self.attack_time = 0
+
+        # --- Stats ---
+        self.character_level = 1
+        self.xp = 0
+        self.xp_to_next_level = 100
+        self.strength = 5
+        self.dexterity = 5
+        self.intelligence = 5
+        self.wisdom = 5
+        self.charisma = 5
+        self.available_stat_points = 0
 
 
         self.change_x = 0
@@ -188,9 +199,9 @@ class Player(pygame.sprite.Sprite):
             self.attack_time = pygame.time.get_ticks()
             # Create a hitbox in front of the player
             if self.facing_right:
-                self.attack_rect = pygame.Rect(self.rect.right, self.rect.y, 40, self.rect.height)
+                self.attack_rect = pygame.Rect(self.rect.right, self.rect.y, 60, self.rect.height)
             else:
-                self.attack_rect = pygame.Rect(self.rect.left - 40, self.rect.y, 40, self.rect.height)
+                self.attack_rect = pygame.Rect(self.rect.left - 60, self.rect.y, 60, self.rect.height)
 
     def _handle_attack_timer(self):
         """
@@ -201,3 +212,23 @@ class Player(pygame.sprite.Sprite):
             if now - self.attack_time > self.attack_duration:
                 self.attacking = False
                 self.attack_rect = pygame.Rect(0, 0, 0, 0)
+
+    def add_xp(self, amount):
+        """
+        Add XP to the player and check for level up.
+        """
+        self.xp += amount
+        print(f"Player gained {amount} XP! Total XP: {self.xp}/{self.xp_to_next_level}")
+        self._check_level_up()
+
+    def _check_level_up(self):
+        """
+        Check if the player has enough XP to level up.
+        """
+        while self.xp >= self.xp_to_next_level:
+            self.character_level += 1
+            self.xp -= self.xp_to_next_level
+            self.xp_to_next_level = 100 * self.character_level
+            self.available_stat_points += 5
+            print(f"Ding! You reached level {self.character_level}!")
+            print(f"You have {self.available_stat_points} stat points to spend.")
