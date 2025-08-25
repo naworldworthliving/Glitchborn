@@ -15,3 +15,9 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.image.fill(PLATFORM_COLOR)
         self.rect = self.image.get_rect()
+
+    def update(self, shift_x=0):
+        """
+        Update the platform's position.
+        """
+        self.rect.x += shift_x

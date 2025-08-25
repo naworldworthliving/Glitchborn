@@ -2,6 +2,8 @@ import pygame
 from player import Player
 from level import Level
 from enemy import Enemy
+from treasure import TreasureChest
+from portal import Portal
 
 # --- Constants ---
 SCREEN_WIDTH = 800
@@ -62,39 +64,58 @@ class Game:
         self.level.update()
 
         # --- Side-scrolling logic ---
-        # If the player gets near the right side, shift the world left (-x)
         if self.player.rect.right > SCREEN_WIDTH - 200:
             shift = self.player.rect.right - (SCREEN_WIDTH - 200)
             self.player.rect.right = SCREEN_WIDTH - 200
             self.level.shift_world(-shift)
-
-        # If the player gets near the left side, shift the world right (+x)
         if self.player.rect.left < 200:
             shift = 200 - self.player.rect.left
             self.player.rect.left = 200
             self.level.shift_world(shift)
 
-        # --- Attack collision ---
+        # --- Collision detection ---
+        # Attack collision
         if self.player.attacking:
-            # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
-            # We need to check for collision in the same coordinate system.
-            # We can check by creating a temporary rect for the enemy in screen coordinates.
             for enemy in self.level.enemy_list:
-                # The world_shift is the offset of the world relative to the screen.
-                # A positive world_shift means the world has moved right (player went left).
-                # So, screen_x = world_x + world_shift
                 enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
                 if self.player.attack_rect.colliderect(enemy_screen_rect):
                     enemy.kill()
 
-        # --- Player-enemy collision ---
-        # Only check for player-enemy collision if the player is not attacking.
+        # Player-enemy collision
         if not self.player.attacking:
-            enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
-            if enemy_hit_list:
-                # For now, just print a message
+            if pygame.sprite.spritecollide(self.player, self.level.enemy_list, False):
                 print("Player hit an enemy!")
-                # We could end the game here, or reduce player health, etc.
+
+        # Player-chest collision
+        if self.level.treasure_chest and not self.level.treasure_chest.opened:
+            chest_screen_rect = self.level.treasure_chest.rect.move(self.level.world_shift, 0)
+            if self.player.rect.colliderect(chest_screen_rect):
+                self.level.treasure_chest.open()
+                # Spawn portal
+                portal_x = self.level.treasure_chest.rect.x
+                portal_y = self.level.treasure_chest.rect.y - 60
+                self.level.portal = Portal(portal_x, portal_y)
+                self.level.world_objects.add(self.level.portal)
+
+        # Player-portal collision
+        if self.level.portal:
+            portal_screen_rect = self.level.portal.rect.move(self.level.world_shift, 0)
+            if self.player.rect.colliderect(portal_screen_rect):
+                self.next_level()
+
+    def next_level(self):
+        """
+        Go to the next level.
+        """
+        print("Moving to the next level!")
+        # Reset player position
+        self.player.rect.x = SCREEN_WIDTH / 2
+        self.player.rect.y = SCREEN_HEIGHT / 2
+        self.player.change_x = 0
+        self.player.change_y = 0
+        # Generate new level
+        self.level.world_shift = 0
+        self.level.generate_level()
 
     def draw(self):
         """
@@ -103,6 +124,11 @@ class Game:
         self.screen.fill(BLACK)
         self.level.draw(self.screen)
         self.all_sprites.draw(self.screen)
+
+        # Draw attack visual
+        if self.player.attacking:
+            self.screen.blit(self.player.attack_image, self.player.attack_rect)
+
         pygame.display.flip()
 
     def quit(self):

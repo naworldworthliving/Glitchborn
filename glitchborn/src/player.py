@@ -51,6 +51,9 @@ class Player(pygame.sprite.Sprite):
         self.attack_rect = pygame.Rect(0, 0, 0, 0)
         self.attack_duration = 200 # ms
         self.attack_time = 0
+        self.attack_image = pygame.Surface((40, self.rect.height))
+        self.attack_image.fill((255, 255, 255))
+        self.attack_image.set_alpha(128)
 
 
         self.change_x = 0

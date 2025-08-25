@@ -19,3 +19,9 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+    def update(self, shift_x=0):
+        """
+        Update the enemy's position.
+        """
+        self.rect.x += shift_x
