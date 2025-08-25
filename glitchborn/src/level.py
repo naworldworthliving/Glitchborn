@@ -1,4 +1,5 @@
 import pygame
+import random
 from platform import Platform
 from enemy import Enemy
 
@@ -30,35 +31,58 @@ class Level:
             ground_tile_image = pygame.Surface([64, 64])
             ground_tile_image.fill((0, 255, 0)) # Green placeholder
 
-        # Ground platform
-        ground = Platform(2000, 64, tile_image=ground_tile_image)
+        # Ground platform - we can make this longer for a longer level
+        ground = Platform(5000, 64, tile_image=ground_tile_image)
         ground.rect.x = 0
         ground.rect.y = 536 # Place ground at the bottom of the screen (600 - 64)
         self.platform_list.add(ground)
 
+        # Generate the rest of the level
+        self._generate_level()
 
-        # Array of platform data: [width, height, x, y]
-        level_data = [
-            [500, 30, 100, 500],
-            [300, 30, 300, 400],
-            [200, 30, 550, 300],
-        ]
+    def _generate_level(self):
+        """
+        Procedurally generates the platforms and enemies for the level.
+        """
+        # --- Generation Parameters ---
+        PLATFORM_COUNT = 100
+        MIN_WIDTH, MAX_WIDTH = 150, 300
+        MIN_GAP, MAX_GAP = 80, 200
+        MIN_Y, MAX_Y = 250, 500
+        MAX_Y_CHANGE = 80
 
-        for data in level_data:
-            platform = Platform(data[0], data[1])
-            platform.rect.x = data[2]
-            platform.rect.y = data[3]
+        last_x = 500
+        last_y = 450
+
+        for _ in range(PLATFORM_COUNT):
+            width = random.randint(MIN_WIDTH, MAX_WIDTH)
+            height = 30 # Standard platform height
+
+            # Calculate new position
+            gap = random.randint(MIN_GAP, MAX_GAP)
+            x = last_x + gap
+
+            y_change = random.randint(-MAX_Y_CHANGE, MAX_Y_CHANGE)
+            y = last_y + y_change
+
+            # Clamp y-position to ensure level is traversable
+            y = max(MIN_Y, min(y, MAX_Y))
+
+            # Create and add the platform
+            platform = Platform(width, height)
+            platform.rect.x = x
+            platform.rect.y = y
             self.platform_list.add(platform)
 
-        # Array of enemy data: [x, y]
-        enemy_data = [
-            [400, 504], # Adjusted for new ground height
-            [800, 370],
-        ]
+            # Update for next iteration
+            last_x = platform.rect.right
+            last_y = platform.rect.y
 
-        for data in enemy_data:
-            enemy = Enemy(data[0], data[1])
-            self.enemy_list.add(enemy)
+            # --- Optional: Spawn an enemy on this platform ---
+            ENEMY_SPAWN_CHANCE = 0.3
+            if random.random() < ENEMY_SPAWN_CHANCE:
+                enemy = Enemy(platform.rect.x + 20, platform.rect.y - 32) # 32 is ENEMY_HEIGHT
+                self.enemy_list.add(enemy)
 
     def shift_world(self, shift_x):
         """
