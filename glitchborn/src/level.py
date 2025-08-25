@@ -4,6 +4,7 @@ from platform import Platform
 from enemy import Enemy
 from treasure import TreasureChest
 from portal import Portal
+from campfire import Campfire, CAMPFIRE_HEIGHT
 
 class Level:
     """
@@ -18,6 +19,7 @@ class Level:
         self.world_objects = pygame.sprite.Group() # For chest, portal, etc.
         self.dropped_items = pygame.sprite.Group()
         self.portal = None # To be created when chest is opened
+        self.campfire = None # To be created during level generation
         self.world_shift = 0
         self.generate_level()
 
@@ -77,6 +79,16 @@ class Level:
         chest_y = last_y - 40
         self.treasure_chest = TreasureChest(chest_x, chest_y)
         self.world_objects.add(self.treasure_chest)
+
+        # --- Add a single campfire ---
+        # Get a list of all platforms except the first one (ground)
+        spawn_platforms = self.platform_list.sprites()[1:]
+        if spawn_platforms:
+            campfire_platform = random.choice(spawn_platforms)
+            campfire_x = campfire_platform.rect.centerx
+            campfire_y = campfire_platform.rect.top - CAMPFIRE_HEIGHT
+            self.campfire = Campfire(campfire_x, campfire_y)
+            self.world_objects.add(self.campfire)
 
     def shift_world(self, shift_x):
         """

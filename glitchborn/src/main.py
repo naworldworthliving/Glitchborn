@@ -11,6 +11,7 @@ from item_generator import generate_random_item
 
 # --- Constants ---
 DROP_CHANCE = 0.5 # 50%
+PLAYER_REACH = 50 # pixels
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 TITLE = "Glitchborn"
@@ -61,6 +62,8 @@ class Game:
                     self.player.jump()
                 if event.key == pygame.K_f:
                     self.player.attack()
+                if event.key == pygame.K_e:
+                    self.check_interaction()
 
     def update(self):
         """
@@ -106,16 +109,6 @@ class Game:
             if pygame.sprite.spritecollide(self.player, self.level.enemy_list, False):
                 print("Player hit an enemy!")
 
-        # Player-chest collision
-        if self.level.treasure_chest and not self.level.treasure_chest.opened:
-            chest_screen_rect = self.level.treasure_chest.rect.move(self.level.world_shift, 0)
-            if self.player.rect.colliderect(chest_screen_rect):
-                self.level.treasure_chest.open()
-                # Spawn portal
-                portal_x = self.level.treasure_chest.rect.x
-                portal_y = self.level.treasure_chest.rect.y - 60
-                self.level.portal = Portal(portal_x, portal_y)
-                self.level.world_objects.add(self.level.portal)
 
         # Player-portal collision
         if self.level.portal:
@@ -143,6 +136,30 @@ class Game:
         # Generate new level
         self.level.world_shift = 0
         self.level.generate_level()
+
+    def check_interaction(self):
+        """
+        Check if the player is close enough to interact with an object.
+        """
+        # Check for chest interaction
+        if self.level.treasure_chest and not self.level.treasure_chest.opened:
+            chest_screen_rect = self.level.treasure_chest.rect.move(self.level.world_shift, 0)
+            if self.player.rect.colliderect(chest_screen_rect.inflate(PLAYER_REACH, PLAYER_REACH)):
+                self.level.treasure_chest.open()
+                # Spawn portal
+                portal_x = self.level.treasure_chest.rect.x
+                portal_y = self.level.treasure_chest.rect.y - 60
+                self.level.portal = Portal(portal_x, portal_y)
+                self.level.world_objects.add(self.level.portal)
+                return # Interact with one thing at a time
+
+        # Check for campfire interaction
+        if self.level.campfire and not self.level.campfire.used:
+            campfire_screen_rect = self.level.campfire.rect.move(self.level.world_shift, 0)
+            if self.player.rect.colliderect(campfire_screen_rect.inflate(PLAYER_REACH, PLAYER_REACH)):
+                self.level.campfire.activate(self.player)
+                return # Interact with one thing at a time
+
 
     def draw(self):
         """
