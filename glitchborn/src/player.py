@@ -1,4 +1,5 @@
 import pygame
+from inventory import Inventory
 
 # --- Constants ---
 PLAYER_WIDTH = 32
@@ -51,15 +52,26 @@ class Player(pygame.sprite.Sprite):
         self.attack_rect = pygame.Rect(0, 0, 0, 0)
         self.attack_duration = 200 # ms
         self.attack_time = 0
+        self.attack_damage = 10
         self.attack_image = pygame.Surface((40, self.rect.height))
         self.attack_image.fill((255, 255, 255))
         self.attack_image.set_alpha(128)
+
+        # --- Player Stats ---
+        self.level = 1
+        self.max_hp = 100
+        self.hp = self.max_hp
+        self.max_stamina = 100
+        self.stamina = self.max_stamina
+        self.xp = 0
+        self.xp_to_next_level = 100
+
+        self.inventory = Inventory()
 
 
         self.change_x = 0
         self.change_y = 0
         self.jump_count = 0
-        self.level = None
 
     def update(self):
         """

@@ -1,11 +1,16 @@
 import pygame
+import random
 from player import Player
 from level import Level
 from enemy import Enemy
 from treasure import TreasureChest
 from portal import Portal
+from ui import UI
+from item import DroppedItem
+from item_generator import generate_random_item
 
 # --- Constants ---
+DROP_CHANCE = 0.5 # 50%
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 TITLE = "Glitchborn"
@@ -30,6 +35,7 @@ class Game:
         self.player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.player.level = self.level
         self.all_sprites.add(self.player)
+        self.ui = UI(self.player)
 
 
     def run(self):
@@ -76,10 +82,24 @@ class Game:
         # --- Collision detection ---
         # Attack collision
         if self.player.attacking:
+            # We need to make sure we only hit each enemy once per attack
+            if not hasattr(self.player, 'hit_enemies_this_attack'):
+                self.player.hit_enemies_this_attack = []
+
             for enemy in self.level.enemy_list:
-                enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
-                if self.player.attack_rect.colliderect(enemy_screen_rect):
-                    enemy.kill()
+                if enemy not in self.player.hit_enemies_this_attack:
+                    enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
+                    if self.player.attack_rect.colliderect(enemy_screen_rect):
+                        self.player.hit_enemies_this_attack.append(enemy)
+                        if enemy.take_damage(self.player.attack_damage):
+                            # Enemy died, roll for drop
+                            if random.random() < DROP_CHANCE:
+                                item = generate_random_item()
+                                dropped_item_sprite = DroppedItem(enemy.rect.x, enemy.rect.y, item)
+                                self.level.dropped_items.add(dropped_item_sprite)
+        else:
+            # Reset the hit list when not attacking
+            self.player.hit_enemies_this_attack = []
 
         # Player-enemy collision
         if not self.player.attacking:
@@ -102,6 +122,13 @@ class Game:
             portal_screen_rect = self.level.portal.rect.move(self.level.world_shift, 0)
             if self.player.rect.colliderect(portal_screen_rect):
                 self.next_level()
+
+        # Player-item collision (pickup)
+        for item_sprite in self.level.dropped_items:
+            item_screen_rect = item_sprite.rect.move(self.level.world_shift, 0)
+            if self.player.rect.colliderect(item_screen_rect):
+                if self.player.inventory.add_item(item_sprite.item):
+                    item_sprite.kill()
 
     def next_level(self):
         """
@@ -128,6 +155,9 @@ class Game:
         # Draw attack visual
         if self.player.attacking:
             self.screen.blit(self.player.attack_image, self.player.attack_rect)
+
+        # Draw UI
+        self.ui.draw()
 
         pygame.display.flip()
 
