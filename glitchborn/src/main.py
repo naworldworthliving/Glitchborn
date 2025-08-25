@@ -8,6 +8,7 @@ from portal import Portal
 from ui import UI
 from item import DroppedItem
 from item_generator import generate_random_item
+from particle import create_explosion
 
 # --- Constants ---
 DROP_CHANCE = 0.5 # 50%
@@ -95,7 +96,9 @@ class Game:
                     if self.player.attack_rect.colliderect(enemy_screen_rect):
                         self.player.hit_enemies_this_attack.append(enemy)
                         if enemy.take_damage(self.player.attack_damage):
-                            # Enemy died, roll for drop
+                            # Enemy died
+                            create_explosion(enemy.rect.centerx, enemy.rect.centery, self.level.particle_list)
+                            # Roll for drop
                             if random.random() < DROP_CHANCE:
                                 item = generate_random_item()
                                 dropped_item_sprite = DroppedItem(enemy.rect.x, enemy.rect.y, item)

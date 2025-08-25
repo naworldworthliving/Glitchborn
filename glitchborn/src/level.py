@@ -18,6 +18,7 @@ class Level:
         self.enemy_list = pygame.sprite.Group()
         self.world_objects = pygame.sprite.Group() # For chest, portal, etc.
         self.dropped_items = pygame.sprite.Group()
+        self.particle_list = pygame.sprite.Group()
         self.portal = None # To be created when chest is opened
         self.campfire = None # To be created during level generation
         self.world_shift = 0
@@ -33,6 +34,7 @@ class Level:
         self.enemy_list.empty()
         self.world_objects.empty()
         self.dropped_items.empty()
+        self.particle_list.empty()
 
         # --- Level generation parameters ---
         level_length = 50 # Number of platforms
@@ -99,6 +101,7 @@ class Level:
         self.enemy_list.update(shift_x)
         self.world_objects.update(shift_x)
         self.dropped_items.update(shift_x)
+        self.particle_list.update(shift_x)
 
     def draw(self, screen):
         """
@@ -108,6 +111,7 @@ class Level:
         self.enemy_list.draw(screen)
         self.world_objects.draw(screen)
         self.dropped_items.draw(screen)
+        self.particle_list.draw(screen)
 
     def update(self):
         """
@@ -117,3 +121,4 @@ class Level:
         self.enemy_list.update()
         self.world_objects.update()
         self.dropped_items.update()
+        self.particle_list.update()
