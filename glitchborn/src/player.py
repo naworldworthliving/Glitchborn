@@ -67,9 +67,55 @@ class Player(pygame.sprite.Sprite):
         self.inventory = []
 
         # --- Player Stats ---
-        self.health = 100
-        self.strength = 10
-        self.defense = 5
+        self.base_stats = {
+            "health": 100,
+            "strength": 10,
+            "dexterity": 10,
+            "intelligence": 10,
+            "wisdom": 10,
+            "magic": 10,
+            "charisma": 10,
+        }
+        self.total_stats = self.base_stats.copy()
+
+        # --- Equipment ---
+        self.equipment = {
+            "weapon": None,
+            "shield": None,
+            "head": None,
+            "chest": None,
+            "legs": None,
+            "feet": None,
+        }
+
+    def update_stats(self):
+        """ Recalculate total stats based on base stats and equipped items. """
+        self.total_stats = self.base_stats.copy()
+        for item in self.equipment.values():
+            if item:
+                for stat, value in item.stats.items():
+                    if stat in self.total_stats:
+                        self.total_stats[stat] += value
+
+    def equip(self, item):
+        """ Equip an item from the inventory. """
+        slot = item.item_type
+        if slot in self.equipment:
+            # Unequip current item in the slot, if any
+            if self.equipment[slot]:
+                self.unequip(slot)
+
+            self.equipment[slot] = item
+            self.inventory.remove(item)
+            self.update_stats()
+
+    def unequip(self, slot):
+        """ Unequip an item from a slot. """
+        if self.equipment.get(slot):
+            item = self.equipment[slot]
+            self.inventory.append(item)
+            self.equipment[slot] = None
+            self.update_stats()
 
     def update(self):
         """

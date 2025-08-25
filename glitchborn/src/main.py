@@ -52,6 +52,7 @@ class Game:
         self.all_sprites.add(self.player)
         self.character_screen_open = False
         self.inventory_screen_open = False
+        self.inventory_item_rects = []
 
 
     def run(self):
@@ -72,6 +73,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+            if self.inventory_screen_open and event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1: # Left click
+                    for item, rect in self.inventory_item_rects:
+                        if rect.collidepoint(event.pos):
+                            self.player.equip(item)
+                            break
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.player.jump()
@@ -153,17 +162,35 @@ class Game:
         self.screen.blit(overlay, (0, 0))
 
         self.draw_text("Inventory", 50, 50)
+        self.inventory_item_rects.clear()
+
         y_offset = 100
         for item in self.player.inventory:
+            # Display equipped status
+            equipped = False
+            for equipped_item in self.player.equipment.values():
+                if item == equipped_item:
+                    equipped = True
+                    break
+
+            display_name = f"{item.name} {'[E]' if equipped else ''}"
             color = ITEM_QUALITIES.get(item.quality, (255, 255, 255))
-            self.draw_text(item.name, 50, y_offset, color)
-            y_offset += 30
+            item_rect = self.draw_text(display_name, 50, y_offset, color)
+            self.inventory_item_rects.append((item, item_rect))
+
+            # Display stats
+            y_offset += 25
+            for stat, value in item.stats.items():
+                self.draw_text(f"  {stat.capitalize()}: +{value}", 60, y_offset, (200, 200, 200))
+                y_offset += 20
+            y_offset += 15
 
     def draw_text(self, text, x, y, color=(255, 255, 255)):
         text_surface = self.font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.topleft = (x, y)
         self.screen.blit(text_surface, text_rect)
+        return text_rect
 
     def draw_character_screen(self):
         # Semi-transparent background
@@ -173,9 +200,10 @@ class Game:
 
         # Stats
         self.draw_text("Character Stats", 50, 50)
-        self.draw_text(f"Health: {self.player.health}", 50, 100)
-        self.draw_text(f"Strength: {self.player.strength}", 50, 130)
-        self.draw_text(f"Defense: {self.player.defense}", 50, 160)
+        y_offset = 100
+        for stat, value in self.player.total_stats.items():
+            self.draw_text(f"{stat.capitalize()}: {value}", 50, y_offset)
+            y_offset += 30
 
     def quit(self):
         """
