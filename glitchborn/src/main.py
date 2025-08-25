@@ -1,4 +1,5 @@
 import pygame
+import random
 from player import Player
 from level import Level
 from enemy import Enemy
@@ -108,8 +109,12 @@ class Game:
                     # So, screen_x = world_x + world_shift
                     enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
                     if self.player.attack_rect.colliderect(enemy_screen_rect):
-                        self.player.add_xp(enemy.xp_reward)
+                        xp = random.randint(enemy.xp_reward[0], enemy.xp_reward[1])
+                        self.player.add_xp(xp)
                         enemy.kill()
+                        # Item drop logic
+                        if random.random() < 0.5: # 50% drop chance
+                            print("Enemy dropped an item!")
 
             # --- Player-enemy collision ---
             # Only check for player-enemy collision if the player is not attacking.
