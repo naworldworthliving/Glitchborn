@@ -57,6 +57,12 @@ class Player(pygame.sprite.Sprite):
         self.change_y = 0
         self.jump_count = 0
         self.level = None
+        self.inventory = []
+
+        # --- Player Stats ---
+        self.health = 100
+        self.strength = 10
+        self.defense = 5
 
     def update(self):
         """

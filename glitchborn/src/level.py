@@ -13,6 +13,7 @@ class Level:
         """
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
+        self.floating_text_group = pygame.sprite.Group()
         self.world_shift = 0
 
         # Array of platform data: [width, height, x, y]
@@ -49,6 +50,8 @@ class Level:
             platform.rect.x += shift_x
         for enemy in self.enemy_list:
             enemy.rect.x += shift_x
+        for text in self.floating_text_group:
+            text.rect.x += shift_x
 
     def draw(self, screen):
         """
@@ -57,6 +60,7 @@ class Level:
         # We will draw the background here later
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
+        self.floating_text_group.draw(screen)
 
     def update(self):
         """
@@ -64,3 +68,4 @@ class Level:
         """
         self.platform_list.update()
         self.enemy_list.update()
+        self.floating_text_group.update()
