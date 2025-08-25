@@ -1,6 +1,7 @@
 import pygame
 from player import Player
 from level import Level
+from enemy import Enemy
 
 # --- Constants ---
 SCREEN_WIDTH = 800
@@ -57,6 +58,26 @@ class Game:
         """
         self.all_sprites.update()
         self.level.update()
+
+        # --- Side-scrolling logic ---
+        # If the player gets near the right side, shift the world left (-x)
+        if self.player.rect.right > SCREEN_WIDTH - 200:
+            shift = self.player.rect.right - (SCREEN_WIDTH - 200)
+            self.player.rect.right = SCREEN_WIDTH - 200
+            self.level.shift_world(-shift)
+
+        # If the player gets near the left side, shift the world right (+x)
+        if self.player.rect.left < 200:
+            shift = 200 - self.player.rect.left
+            self.player.rect.left = 200
+            self.level.shift_world(shift)
+
+        # --- Player-enemy collision ---
+        enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
+        for enemy in enemy_hit_list:
+            # For now, just print a message
+            print("Player hit an enemy!")
+            # We could end the game here, or reduce player health, etc.
 
     def draw(self):
         """

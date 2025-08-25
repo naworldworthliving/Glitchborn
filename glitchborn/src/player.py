@@ -18,11 +18,18 @@ class Player(pygame.sprite.Sprite):
         """
         super().__init__()
         # -- Load images for animations ---
-        self.idle_image = pygame.image.load("glitchborn/assets/player_s.png").convert_alpha()
+        # -- Load images for animations ---
+        self.idle_image = pygame.image.load("glitchborn/assets/player_s.png").convert()
+        self.idle_image.set_colorkey((255, 255, 255))
         self.walk_frames = [
-            pygame.image.load("glitchborn/assets/player_w1.png").convert_alpha(),
-            pygame.image.load("glitchborn/assets/player_w2.png").convert_alpha()
+            pygame.image.load("glitchborn/assets/player_walk1.png").convert(),
+            pygame.image.load("glitchborn/assets/player_walk2.png").convert(),
+            pygame.image.load("glitchborn/assets/player_walk3.png").convert(),
+            pygame.image.load("glitchborn/assets/player_walk4.png").convert()
         ]
+        for frame in self.walk_frames:
+            frame.set_colorkey((255, 255, 255))
+
         # Create flipped images for moving left
         self.idle_image_left = pygame.transform.flip(self.idle_image, True, False)
         self.walk_frames_left = [pygame.transform.flip(img, True, False) for img in self.walk_frames]
