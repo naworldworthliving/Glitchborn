@@ -103,7 +103,7 @@ class Game:
                 # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
                 # We need to check for collision in the same coordinate system.
                 # We can check by creating a temporary rect for the enemy in screen coordinates.
-                for enemy in self.level.enemy_list:
+                for enemy in self.level.enemy_list.copy():
                     # The world_shift is the offset of the world relative to the screen.
                     # A positive world_shift means the world has moved right (player went left).
                     # So, screen_x = world_x + world_shift
