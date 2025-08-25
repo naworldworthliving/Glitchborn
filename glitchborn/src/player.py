@@ -53,14 +53,21 @@ class Player(pygame.sprite.Sprite):
         self.attack_time = 0
 
         # --- Stats ---
-        self.level = 1
+        self.character_level = 1
         self.xp = 0
         self.xp_to_next_level = 100
+        self.strength = 5
+        self.dexterity = 5
+        self.intelligence = 5
+        self.wisdom = 5
+        self.charisma = 5
+        self.available_stat_points = 0
 
 
         self.change_x = 0
         self.change_y = 0
         self.jump_count = 0
+        self.level = None
 
     def update(self):
         """
@@ -219,8 +226,9 @@ class Player(pygame.sprite.Sprite):
         Check if the player has enough XP to level up.
         """
         while self.xp >= self.xp_to_next_level:
-            self.level += 1
+            self.character_level += 1
             self.xp -= self.xp_to_next_level
-            self.xp_to_next_level = 100 * self.level
-            print(f"Ding! You reached level {self.level}!")
-            # In the future, this is where we would grant stat points.
+            self.xp_to_next_level = 100 * self.character_level
+            self.available_stat_points += 5
+            print(f"Ding! You reached level {self.character_level}!")
+            print(f"You have {self.available_stat_points} stat points to spend.")
