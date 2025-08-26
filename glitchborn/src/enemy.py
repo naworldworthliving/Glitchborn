@@ -21,6 +21,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.xp_reward = (20, 30) # Range of XP granted when defeated
+        self.health = 100
 
         # --- Patrolling AI ---
         self.start_x = x
@@ -42,3 +43,13 @@ class Enemy(pygame.sprite.Sprite):
             self.direction = 1
             # Snap back to the edge
             self.rect.x = self.start_x
+
+    def take_damage(self, amount):
+        """
+        Reduces health by the given amount. Returns True if the enemy is killed.
+        """
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+            return True
+        return False

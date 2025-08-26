@@ -60,7 +60,9 @@ class Game:
                     self.player.jump()
                 if event.key == pygame.K_f:
                     self.player.attack()
-                if event.key == pygame.K_c:
+                if event.key == pygame.K_LSHIFT:
+                    self.player.dash()
+                if event.key == pygame.K_i:
                     if self.game_state == 'playing':
                         self.game_state = 'character_screen'
                     elif self.game_state == 'character_screen':
@@ -74,6 +76,7 @@ class Game:
                                 self.player.available_stat_points -= 1
                                 current_value = getattr(self.player, stat_name.lower())
                                 setattr(self.player, stat_name.lower(), current_value + 1)
+                                self.player.update_derived_stats()
                                 print(f"Increased {stat_name} to {getattr(self.player, stat_name.lower())}")
                                 break # Process one click at a time
 
@@ -100,25 +103,28 @@ class Game:
 
             # --- Attack collision ---
             if self.player.attacking:
-                # The attack_rect is in screen coordinates. The enemy rects are in world coordinates.
-                # We need to check for collision in the same coordinate system.
-                # We can check by creating a temporary rect for the enemy in screen coordinates.
                 for enemy in self.level.enemy_list:
-                    # The world_shift is the offset of the world relative to the screen.
-                    # A positive world_shift means the world has moved right (player went left).
-                    # So, screen_x = world_x + world_shift
+                    # Skip enemies already hit in this attack swing
+                    if enemy in self.player.hit_enemies_this_attack:
+                        continue
+
                     enemy_screen_rect = enemy.rect.move(self.level.world_shift, 0)
                     if self.player.attack_rect.colliderect(enemy_screen_rect):
-                        xp = random.randint(enemy.xp_reward[0], enemy.xp_reward[1])
-                        self.player.add_xp(xp)
-                        enemy.kill()
-                        # Item drop logic
-                        if random.random() < 0.5: # 50% drop chance
-                            print("Enemy dropped an item!")
+                        self.player.hit_enemies_this_attack.append(enemy)
+
+                        damage = self.player.calculate_damage()
+                        killed = enemy.take_damage(damage)
+
+                        if killed:
+                            xp = random.randint(enemy.xp_reward[0], enemy.xp_reward[1])
+                            self.player.add_xp(xp)
+                            # Item drop logic
+                            if random.random() < 0.5: # 50% drop chance
+                                print("Enemy dropped an item!")
 
             # --- Player-enemy collision ---
-            # Only check for player-enemy collision if the player is not attacking.
-            if not self.player.attacking:
+            # Only check for player-enemy collision if the player is not attacking or invincible.
+            if not self.player.attacking and not self.player.invincible:
                 enemy_hit_list = pygame.sprite.spritecollide(self.player, self.level.enemy_list, False)
                 if enemy_hit_list:
                     # For now, just print a message
